@@ -27,10 +27,22 @@ python ccwatch.py
 python ccwatch.py -w 5
 ```
 
+带 Webhook 通知：
+```bash
+python ccwatch.py -w 5 --webhook "https://hooks.slack.com/services/xxx"
+```
+
 Windows 下如遇中文乱码：
 ```cmd
 set PYTHONIOENCODING=utf-8 && python ccwatch.py
 ```
+
+## 通知方式
+
+- **Windows**: Toast 通知 + 系统提示音
+- **macOS**: 系统通知中心
+- **Linux**: notify-send
+- **Webhook**: 支持 Slack/Discord/企业微信等
 
 ## 输出示例
 
