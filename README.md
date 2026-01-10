@@ -9,7 +9,7 @@
 ## 安装
 
 ```bash
-git clone https://github.com/YOUR_USERNAME/ccwatch.git
+git clone https://github.com/ThendCN/ccwatch.git
 cd ccwatch
 ```
 
