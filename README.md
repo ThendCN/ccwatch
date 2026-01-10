@@ -32,10 +32,23 @@ python ccwatch.py -w 5
 python ccwatch.py -w 5 --webhook "https://hooks.slack.com/services/xxx"
 ```
 
+自定义通知冷却时间（默认 60 秒，防止频繁打扰）：
+```bash
+python ccwatch.py -w 5 --cooldown 300  # 5分钟内同一模型只通知一次
+```
+
 Windows 下如遇中文乱码：
 ```cmd
 set PYTHONIOENCODING=utf-8 && python ccwatch.py
 ```
+
+## 参数
+
+| 参数 | 说明 |
+|------|------|
+| `-w, --watch SEC` | 持续监控，指定检查间隔秒数 |
+| `--webhook URL` | Webhook 通知地址 |
+| `--cooldown SEC` | 通知冷却时间，默认 60 秒 |
 
 ## 通知方式
 
