@@ -11,6 +11,10 @@ STATS_FILE = Path.home() / ".claude" / "stats-cache.json"
 
 def notify(title, message, webhook=None):
     """发送通知"""
+    # 转义特殊字符
+    safe_title = title.replace("'", "''").replace('"', '`"')
+    safe_msg = message.replace("'", "''").replace('"', '`"')
+
     # Windows Toast 通知
     if sys.platform == "win32":
         try:
@@ -18,18 +22,19 @@ def notify(title, message, webhook=None):
             windll.user32.MessageBeep(0x40)  # 播放提示音
         except: pass
         try:
-            subprocess.run([
-                "powershell", "-Command",
-                f"[Windows.UI.Notifications.ToastNotificationManager, Windows.UI.Notifications, ContentType = WindowsRuntime] | Out-Null; "
-                f"$xml = [Windows.UI.Notifications.ToastNotificationManager]::GetTemplateContent([Windows.UI.Notifications.ToastTemplateType]::ToastText02); "
-                f"$xml.GetElementsByTagName('text')[0].AppendChild($xml.CreateTextNode('{title}')); "
-                f"$xml.GetElementsByTagName('text')[1].AppendChild($xml.CreateTextNode('{message}')); "
-                f"[Windows.UI.Notifications.ToastNotificationManager]::CreateToastNotifier('ccwatch').Show([Windows.UI.Notifications.ToastNotification]::new($xml))"
-            ], capture_output=True)
+            ps_cmd = f'''
+            [Windows.UI.Notifications.ToastNotificationManager, Windows.UI.Notifications, ContentType = WindowsRuntime] | Out-Null
+            $xml = [Windows.UI.Notifications.ToastNotificationManager]::GetTemplateContent([Windows.UI.Notifications.ToastTemplateType]::ToastText02)
+            $texts = $xml.GetElementsByTagName('text')
+            $texts[0].AppendChild($xml.CreateTextNode('{safe_title}')) | Out-Null
+            $texts[1].AppendChild($xml.CreateTextNode('{safe_msg}')) | Out-Null
+            [Windows.UI.Notifications.ToastNotificationManager]::CreateToastNotifier('ccwatch').Show([Windows.UI.Notifications.ToastNotification]::new($xml))
+            '''
+            subprocess.run(["powershell", "-Command", ps_cmd], capture_output=True)
         except: pass
     # macOS 通知
     elif sys.platform == "darwin":
-        subprocess.run(["osascript", "-e", f'display notification "{message}" with title "{title}"'], capture_output=True)
+        subprocess.run(["osascript", "-e", f'display notification "{safe_msg}" with title "{safe_title}"'], capture_output=True)
     # Linux 通知
     else:
         subprocess.run(["notify-send", title, message], capture_output=True)
